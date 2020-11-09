@@ -1,59 +1,62 @@
-import csv
-
-
 def find_item(garden, item):
     for g in garden:
-        if g[0] == item:
-            return g
-    return
+        if item == 'moss' and g[1] == 'raspberry':
+            return g[1]
+        if item == 'rock' and g[1] == 'strawberry':
+            return g[1]
+    return None
 
 
 def swap_items(garden1, garden2, pos1, pos2):
-    print(garden1[0] + ' is swapped with ' + garden2[0])
-    neighbors_garden.remove(garden2)
+    # print('Found, swap ' + pos1 + ' with ' + pos2)
+    for my_item in garden1:
+        if my_item[1] == pos1:
+            for other_item in garden2:
+                if other_item[1] == pos2:
+                    my_item[1] = pos2
+                    other_item[1] = pos1
+
     return
 
 
-def clean_garden(my_garden, neighbors_garden):
+def clean_garden(my_garden, other_garden):
     for g in my_garden:
-        if g[0] in ('rock', 'moss'):
-            item = ''
-            if g[0] == 'rock':
-                item = 'strawberry'
-            if g[0] == 'moss':
-                item = 'raspberry'
-            neighbors_garden_posision = find_item(neighbors_garden, item)
-            if neighbors_garden_posision:
-                swap_items(g, neighbors_garden_posision, neighbors_garden_posision[1], neighbors_garden_posision[2])
-    print('Finish')
+        if g[1] in ('rock', 'moss'):
+            foundItem = find_item(other_garden, g[1])
+            if foundItem:
+                # print('Found, swap ' + g[1] + ' with ' + foundItem)
+                swap_items(my_garden, other_garden, g[1], foundItem)
+
     return
 
+if __name__ == "__main__":
 
-my_garden = []
-neighbors_garden = []
+    my_garden = [
+        ["grass", "moss"],
+        ["moss", "strawberry"],
+        ["moss", "rock"]
+    ]
 
-with open('my_garden.csv', newline='', encoding='iso-8859-1') as csvfile:
-    my_gardenreader = csv.reader(csvfile, delimiter=';')
-    for row in my_gardenreader:
-        try:
-            element = row[0]
-            pos1 = float(row[1])  # latitude is second last
-            pos2 = float(row[2])  # longitude is last
-            gardenelement = (element, pos1, pos2)
-        except ValueError:
-            continue
-        my_garden.append(gardenelement)
+    other_garden = [
+        ["grass", "raspberry"],
+        ["grass", "strawberry"],
+        ["strawberry", "rock"]
+    ]
 
-with open('neighbors_garden.csv', newline='', encoding='iso-8859-1') as csvfile:
-    neighbors_gardenreader = csv.reader(csvfile, delimiter=';')
-    for row in neighbors_gardenreader:
-        try:
-            element = row[0]
-            pos1 = float(row[1])  # latitude is second last
-            pos2 = float(row[2])  # longitude is last
-            gardenelement = (element, pos1, pos2)
-        except ValueError:
-            continue
-        neighbors_garden.append(gardenelement)
+    clean_garden(my_garden, other_garden)
 
-clean_garden(my_garden, neighbors_garden)
+    my_after = [
+        ['grass', 'raspberry'],
+        ['moss', 'strawberry'],
+        ['moss', 'strawberry']
+    ]
+
+    other_after = [
+        ['grass', 'moss'],
+        ['grass', 'rock'],
+        ['strawberry', 'rock']
+    ]
+
+    if my_after == my_garden and other_after == other_garden:
+        print('OK!')
+
